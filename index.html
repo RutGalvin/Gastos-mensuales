@@ -22,7 +22,7 @@
 :root{
   --bg:#eef2f0; --surface:#ffffff; --ink:#15211d; --muted:#5c6b66; --line:#d5ddd9;
   --accent:#0f6b55; --accent-ink:#ffffff;
-  --gas:#c7801a; --ocio:#5b5bd6; --ropa:#c2456e; --otros:#6b7a75; --fijo:#2f86ad;
+  --gas:#c7801a; --ocio:#5b5bd6; --ropa:#c2456e; --otros:#6b7a75; --fijo:#2f86ad; --viaje:#13807f;
   --ok:#1f8a5b; --warn:#b7791f; --bad:#c43d3d;
   --track:#e3e9e6;
   --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
@@ -31,12 +31,12 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0f1513; --surface:#18211e; --ink:#e7eeeb; --muted:#93a39d; --line:#2a3632;
   --accent:#3ec49c; --accent-ink:#0b1311;
-  --gas:#e9a23b; --ocio:#8f8ff0; --ropa:#ec7aa0; --otros:#9aa9a3; --fijo:#62b6dc;
+  --gas:#e9a23b; --ocio:#8f8ff0; --ropa:#ec7aa0; --otros:#9aa9a3; --fijo:#62b6dc; --viaje:#4cc3c0;
   --ok:#4cc78a; --warn:#e3a94a; --bad:#f07070; --track:#26312d; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0f1513; --surface:#18211e; --ink:#e7eeeb; --muted:#93a39d; --line:#2a3632;
   --accent:#3ec49c; --accent-ink:#0b1311;
-  --gas:#e9a23b; --ocio:#8f8ff0; --ropa:#ec7aa0; --otros:#9aa9a3; --fijo:#62b6dc;
+  --gas:#e9a23b; --ocio:#8f8ff0; --ropa:#ec7aa0; --otros:#9aa9a3; --fijo:#62b6dc; --viaje:#4cc3c0;
   --ok:#4cc78a; --warn:#e3a94a; --bad:#f07070; --track:#26312d; color-scheme:dark}
 
 *{box-sizing:border-box}
@@ -189,6 +189,26 @@ label.chip{cursor:pointer;display:inline-block}
 @media (max-width:520px){.day{min-height:52px;padding:4px}.day .v{font-size:11px}.cal{gap:4px}}
 .chip{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600}
 .list-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+/* Viajes */
+.trips{display:flex;flex-direction:column;gap:12px}
+.trip{border:1px solid var(--line);border-left:4px solid var(--viaje);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;background:var(--bg)}
+.trip-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.trip-name{font-weight:600;font-size:16px}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;margin-left:6px;vertical-align:2px;background:color-mix(in srgb,var(--viaje) 15%,transparent);color:var(--viaje)}
+.tag.work{background:color-mix(in srgb,var(--fijo) 15%,transparent);color:var(--fijo)}
+.trip .bar span{background:var(--viaje)}
+.trip-acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.trip-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px;border:1px dashed var(--line);border-radius:12px}
+.trip-form .wide{grid-column:1/-1}
+@media (max-width:520px){.trip-form{grid-template-columns:1fr}}
+.check{display:flex;align-items:center;gap:8px;font-weight:500}
+.check input{width:18px;height:18px;accent-color:var(--viaje)}
+details.old summary{cursor:pointer;font-size:14px;color:var(--muted);font-weight:600}
+details.old .trips{margin-top:10px}
+.item .acts{display:flex;gap:4px;align-items:center}
+.reemb{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:3px 8px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.reemb.done{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,var(--line))}
+.day.trip{box-shadow:inset 0 -3px 0 var(--viaje)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -227,6 +247,29 @@ label.chip{cursor:pointer;display:inline-block}
   </section>
 
   <section class="envs" id="envs" aria-label="Categorías"></section>
+
+  <section class="card" id="tripsCard" aria-labelledby="tripsTitle">
+    <div class="cal-head">
+      <h2 id="tripsTitle">Viajes</h2>
+      <button type="button" class="chip" id="tripNew">+ Nuevo viaje</button>
+    </div>
+    <div class="trip-form" id="tripForm" hidden>
+      <div class="field wide"><label class="label" for="tNombre">Nombre del viaje</label><input id="tNombre" maxlength="40" placeholder="Ej. Praga, Campeonato de Europa…" autocomplete="off"></div>
+      <div class="field"><label class="label" for="tDesde">Desde</label><input id="tDesde" type="date"></div>
+      <div class="field"><label class="label" for="tHasta">Hasta</label><input id="tHasta" type="date"></div>
+      <div class="field"><label class="label" for="tPres">Presupuesto (€)</label><input id="tPres" inputmode="decimal" placeholder="Opcional"></div>
+      <label class="check" for="tWork" style="align-self:end;padding-bottom:10px"><input type="checkbox" id="tWork">Viaje de trabajo (me lo devuelven)</label>
+      <div class="set-actions wide" style="margin-top:0">
+        <button class="primary" type="button" id="tSave">Guardar viaje</button>
+        <button type="button" class="chip" id="tCancel">Cancelar</button>
+        <button type="button" class="del" id="tDel" hidden>Borrar viaje</button>
+        <span class="msg" id="tMsg" role="status"></span>
+      </div>
+    </div>
+    <div class="trips" id="trips"></div>
+    <details class="old" id="tripsOld" hidden><summary id="tripsOldSum">Viajes anteriores</summary><div class="trips" id="tripsOldList"></div></details>
+    <div class="tip">Durante el viaje, apunta los gastos con la categoría <b>Viaje</b>. No tocan tus presupuestos de la semana. En un viaje personal salen de tu ahorro; en uno de trabajo quedan pendientes hasta que marques que te los han devuelto.</div>
+  </section>
 
   <section class="card" aria-labelledby="calTitle">
     <div class="cal-head">
@@ -281,7 +324,7 @@ label.chip{cursor:pointer;display:inline-block}
     <div id="monHead" class="mhead"></div>
     <div class="mtable" id="monRows"></div>
     <div class="mfijos" id="monFijos"></div>
-    <div class="tip">¿Vacaciones o un gasto fuera de lo normal? Apúntalo como <b>Extras</b>. No te descuadra los presupuestos de la semana, y aquí ves si lo cubres con lo que te ha sobrado o con la hucha.</div>
+    <div class="tip">¿Un gasto fuera de lo normal que no es de un viaje? Apúntalo como <b>Extras</b>. No te descuadra los presupuestos de la semana, y aquí ves si lo cubres con lo que te ha sobrado o con la hucha.</div>
   </section>
 
   <section class="card" id="goalCard" aria-labelledby="goalTitle">
@@ -343,7 +386,8 @@ label.chip{cursor:pointer;display:inline-block}
     {id:"gasolina", name:"Gasolina", color:"--gas"},
     {id:"ocio", name:"Ocio", color:"--ocio"},
     {id:"ropa", name:"Ropa", color:"--ropa"},
-    {id:"otros", name:"Extras", color:"--otros"}
+    {id:"otros", name:"Extras", color:"--otros"},
+    {id:"viaje", name:"Viaje", color:"--viaje"}
   ];
   const BUDGETED = ["gasolina","ocio","ropa"];
   const MAIN = ["gasolina","ocio"];
@@ -354,7 +398,8 @@ label.chip{cursor:pointer;display:inline-block}
       {id:"f-gym", nombre:"Gimnasio", importe:70, cada:3, primero:MES1},
       {id:"f-netflix", nombre:"Netflix", importe:20, cada:1, primero:MES1}
     ],
-    objetivo:{nombre:"Vacaciones", importe:500}
+    objetivo:{nombre:"Vacaciones", importe:500},
+    viajes:[]
   };
   const LS_KEY = "mi-presupuesto-v1";
 
@@ -401,6 +446,7 @@ label.chip{cursor:pointer;display:inline-block}
       start(onG,onA){onG(data.gastos.slice());onA(data.ajustes)},
       async add(g){const id="g"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);data.gastos.push(Object.assign({id},g));save();return data.gastos.slice()},
       async remove(id){data.gastos=data.gastos.filter(g=>g.id!==id);save();return data.gastos.slice()},
+      async update(ids,patch){ids=[].concat(ids);data.gastos=data.gastos.map(g=>ids.includes(g.id)?Object.assign({},g,patch):g);save();return data.gastos.slice()},
       async saveAjustes(a){data.ajustes=a;save();return a}
     };
   }
@@ -416,6 +462,7 @@ label.chip{cursor:pointer;display:inline-block}
       },
       async add(g){await col.add(g)},
       async remove(id){await col.doc(id).delete()},
+      async update(ids,patch){await Promise.all([].concat(ids).map(id=>col.doc(id).update(patch)))},
       async saveAjustes(a){await aj.set(a)}
     };
   }
@@ -437,7 +484,7 @@ label.chip{cursor:pointer;display:inline-block}
       : "Tus gastos se guardan en este móvil (en este navegador).";
     store.start(
       g=>{state.gastos=g;render()},
-      a=>{state.ajustes=normalize(a);fillSettings();render()},
+      a=>{state.ajustes=normalize(a);fillSettings();if(!state.catTouched&&viajeDe(iso(today())))setCat("viaje");render()},
       ()=>{$("status").textContent="No se pudieron cargar los datos. Recarga la página para reintentarlo."}
     );
   }
@@ -482,6 +529,16 @@ label.chip{cursor:pointer;display:inline-block}
     if(a&&a.objetivo&&isFinite(Number(a.objetivo.importe))&&Number(a.objetivo.importe)>0)
       out.objetivo={nombre:String(a.objetivo.nombre||"Mi objetivo").slice(0,40),importe:Number(a.objetivo.importe)};
     else if(a&&a.objetivo===null) out.objetivo=null;
+    const okD=x=>typeof x==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(x);
+    out.viajes = a&&Array.isArray(a.viajes)
+      ? a.viajes.filter(v=>v&&okD(v.desde)&&okD(v.hasta)&&v.hasta>=v.desde).map(v=>({
+          id:String(v.id||("v"+Math.random().toString(36).slice(2,8))),
+          nombre:String(v.nombre||"Viaje").slice(0,40),
+          desde:v.desde, hasta:v.hasta,
+          presupuesto:(v.presupuesto!=null&&isFinite(Number(v.presupuesto))&&Number(v.presupuesto)>0)?Number(v.presupuesto):null,
+          trabajo:!!v.trabajo
+        }))
+      : [];
     return out;
   }
 
@@ -568,6 +625,7 @@ label.chip{cursor:pointer;display:inline-block}
       envs.appendChild(note);
     }
 
+    renderTrips();
     renderGoal();
     renderMonth(p);
     renderCalendar(p);
@@ -596,10 +654,22 @@ label.chip{cursor:pointer;display:inline-block}
     shown.forEach(g=>{
       const c=CATS.find(x=>x.id===g.cat)||CATS[3];
       const row=document.createElement("div"); row.className="item";
-      row.innerHTML='<span class="dot"></span><div class="t"><div></div><div class="sub"></div></div><span class="amt num"></span><button type="button" class="del">Borrar</button>';
+      row.innerHTML='<span class="dot"></span><div class="t"><div></div><div class="sub"></div></div><span class="amt num"></span><span class="acts"><button type="button" class="del">Borrar</button></span>';
       row.querySelector(".dot").style.background="var("+c.color+")";
       row.querySelector(".t div:first-child").textContent=g.nota||c.name;
-      row.querySelector(".t .sub").textContent=c.name+" · "+df.format(parseIso(g.fecha));
+      const vg=g.cat==="viaje"&&viajeById(g.viaje);
+      row.querySelector(".t .sub").textContent=c.name+(vg?" ("+vg.nombre+")":"")+" · "+df.format(parseIso(g.fecha))+(vg&&vg.trabajo?(g.reemb==="dev"?" · devuelto":" · pendiente de devolver"):"");
+      if(vg&&vg.trabajo){
+        const rb=document.createElement("button"); rb.type="button"; rb.className="reemb"+(g.reemb==="dev"?" done":"");
+        rb.textContent=g.reemb==="dev"?"Devuelto ✓":"Marcar devuelto";
+        rb.setAttribute("aria-label",g.reemb==="dev"?"Devuelto. Toca para marcarlo otra vez como pendiente":"Marcar como devuelto");
+        rb.addEventListener("click",async()=>{
+          rb.disabled=true;
+          try{const r=await store.update(g.id,g.reemb==="dev"?{reemb:"pend",devuelto:null}:{reemb:"dev",devuelto:iso(today())});if(Array.isArray(r)){state.gastos=r;render()}}
+          catch(e){rb.disabled=false;rb.textContent="No se pudo guardar"}
+        });
+        row.querySelector(".acts").prepend(rb);
+      }
       row.querySelector(".amt").textContent=fmt(Number(g.importe)||0);
       const del=row.querySelector(".del"); let timer=null;
       del.addEventListener("click",async()=>{
@@ -649,9 +719,131 @@ label.chip{cursor:pointer;display:inline-block}
     let sob=0, weeks=0;
     for(let w=new Date(ini); w<mon; w=addDays(w,7)){sob+=wb-(perWeek[iso(w)]||0);weeks++}
     const s=iso(ini);
-    const extras=state.gastos.filter(g=>g.cat==="otros"&&g.fecha>=s).reduce((t,g)=>t+(Number(g.importe)||0),0);
-    return {sobrantes:sob, extras, disponible:sob-extras, weeks};
+    const extras=state.gastos.filter(g=>g.fecha>=s).reduce((t,g)=>t+costePropio(g),0);
+    return {sobrantes:sob, extras, disponible:sob-extras, weeks, pendiente:pendienteTotal()};
   }
+
+  /* ---------- Viajes ---------- */
+  function viajeDe(fecha){return state.ajustes.viajes.find(v=>v.desde<=fecha&&fecha<=v.hasta)}
+  function viajeById(id){return state.ajustes.viajes.find(v=>v.id===id)}
+  function gastosViaje(v){return state.gastos.filter(g=>g.cat==="viaje"&&g.viaje===v.id)}
+  function esPendiente(g){const v=g.cat==="viaje"&&viajeById(g.viaje);return !!(v&&v.trabajo&&g.reemb!=="dev")}
+  // Lo que sale de tu bolsillo de verdad: extras y viajes personales (los de trabajo te los devuelven)
+  function costePropio(g){
+    const n=Number(g.importe)||0;
+    if(g.cat==="otros")return n;
+    if(g.cat!=="viaje")return 0;
+    const v=viajeById(g.viaje);
+    return v&&v.trabajo?0:n;
+  }
+  function pendienteTotal(){return state.gastos.filter(esPendiente).reduce((t,g)=>t+(Number(g.importe)||0),0)}
+  function tripEl(v){
+    const tk=iso(today()), gs=gastosViaje(v);
+    const gastado=sumImp(gs), pend=gs.filter(esPendiente).reduce((t,g)=>t+(Number(g.importe)||0),0);
+    const dm=new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short"});
+    const dias=Math.round((parseIso(v.desde)-today())/864e5);
+    const cuando = v.hasta<tk ? "Terminado" : v.desde<=tk ? "En curso" : dias===1 ? "Empieza mañana" : "Empieza en "+dias+" días";
+    const el=document.createElement("article"); el.className="trip";
+    const head=document.createElement("div"); head.className="trip-head";
+    const info=document.createElement("div");
+    const nm=document.createElement("div"); nm.className="trip-name"; nm.textContent=v.nombre;
+    const tag=document.createElement("span"); tag.className="tag"+(v.trabajo?" work":""); tag.textContent=v.trabajo?"Trabajo":"Personal"; nm.appendChild(tag);
+    const when=document.createElement("div"); when.className="sub"; when.textContent=dm.format(parseIso(v.desde))+" – "+dm.format(parseIso(v.hasta))+" · "+cuando;
+    info.append(nm,when);
+    const ed=document.createElement("button"); ed.type="button"; ed.className="chip"; ed.textContent="Editar";
+    ed.addEventListener("click",()=>openTripForm(v));
+    head.append(info,ed); el.appendChild(head);
+
+    const big=document.createElement("div"); big.className="left num";
+    const sub=document.createElement("div"); sub.className="sub num";
+    if(v.presupuesto){
+      const l=v.presupuesto-gastado;
+      big.textContent=l>=0?"Te quedan "+fmt(l):"Te has pasado "+fmt(-l);
+      if(l<0)big.classList.add("neg");
+      sub.textContent=(v.trabajo?"Adelantado ":"Gastado ")+fmt(gastado)+" de "+fmt(v.presupuesto);
+      el.append(big,sub);
+      const bar=document.createElement("div"); bar.className="bar"+(l<0?" over":""); const sp=document.createElement("span");
+      sp.style.width=Math.min(100,gastado/v.presupuesto*100)+"%"; bar.appendChild(sp); el.appendChild(bar);
+    } else {
+      big.textContent=(v.trabajo?"Adelantado ":"Gastado ")+fmt(gastado);
+      sub.textContent="Sin presupuesto fijado";
+      el.append(big,sub);
+    }
+    if(v.trabajo&&gastado>0){
+      const acts=document.createElement("div"); acts.className="trip-acts";
+      const t=document.createElement("span"); t.className="sub num";
+      if(pend>0){
+        t.textContent="Pendiente de que te devuelvan: "+fmt(pend);
+        const b=document.createElement("button"); b.type="button"; b.className="reemb"; b.textContent="Me lo han devuelto todo";
+        b.addEventListener("click",async()=>{
+          if(!b.classList.contains("confirm")){b.classList.add("confirm");b.textContent="¿Seguro? Toca otra vez";return}
+          b.disabled=true;
+          try{const r=await store.update(gs.filter(esPendiente).map(g=>g.id),{reemb:"dev",devuelto:iso(today())});if(Array.isArray(r)){state.gastos=r;render()}}
+          catch(e){b.disabled=false;b.textContent="No se pudo guardar"}
+        });
+        acts.append(t,b);
+      } else { t.textContent="Todo devuelto ✓"; acts.append(t); }
+      el.appendChild(acts);
+    }
+    return el;
+  }
+  function renderTrips(){
+    const tk=iso(today()), all=state.ajustes.viajes.slice().sort((a,b)=>a.desde.localeCompare(b.desde));
+    const vivos=all.filter(v=>v.hasta>=tk||gastosViaje(v).some(esPendiente));
+    const viejos=all.filter(v=>!vivos.includes(v)).reverse();
+    const box=$("trips"); box.innerHTML="";
+    if(!vivos.length){const e=document.createElement("div");e.className="empty";e.textContent="No tienes viajes por delante. Crea uno con sus fechas y, si quieres, un presupuesto.";box.appendChild(e)}
+    vivos.forEach(v=>box.appendChild(tripEl(v)));
+    $("tripsOld").hidden=!viejos.length;
+    $("tripsOldSum").textContent="Viajes anteriores ("+viejos.length+")";
+    const ob=$("tripsOldList"); ob.innerHTML=""; viejos.forEach(v=>ob.appendChild(tripEl(v)));
+  }
+  let editTrip=null;
+  function openTripForm(v){
+    editTrip=v||null;
+    const f=$("tripForm"); f.hidden=false;
+    $("tNombre").value=v?v.nombre:"";
+    $("tDesde").value=v?v.desde:iso(today());
+    $("tHasta").value=v?v.hasta:iso(addDays(today(),6));
+    $("tPres").value=v&&v.presupuesto?String(v.presupuesto).replace(".",","):"";
+    $("tWork").checked=v?v.trabajo:false;
+    $("tDel").hidden=!v; $("tDel").classList.remove("confirm"); $("tDel").textContent="Borrar viaje";
+    $("tMsg").textContent=""; $("tMsg").className="msg";
+    $("tNombre").focus();
+  }
+  async function saveViajes(list,okMsg){
+    const a=clone(state.ajustes); a.viajes=list;
+    await store.saveAjustes(a); state.ajustes=normalize(a); render();
+    if(okMsg){const m=$("tMsg");m.className="msg";m.textContent=okMsg}
+  }
+  $("tripNew").addEventListener("click",()=>openTripForm(null));
+  $("tCancel").addEventListener("click",()=>{$("tripForm").hidden=true;editTrip=null});
+  $("tSave").addEventListener("click",async()=>{
+    const msg=$("tMsg"); msg.className="msg err";
+    const desde=$("tDesde").value, hasta=$("tHasta").value;
+    if(!desde||!hasta){msg.textContent="Pon la fecha de ida y la de vuelta.";return}
+    if(hasta<desde){msg.textContent="La fecha de vuelta no puede ser anterior a la de ida.";return}
+    const pr=$("tPres").value.trim(), pres=pr===""?null:parseNum(pr);
+    if(pres!==null&&(!isFinite(pres)||pres<=0)){msg.textContent="El presupuesto debe ser mayor que 0, o déjalo vacío.";return}
+    const otro=state.ajustes.viajes.find(x=>(!editTrip||x.id!==editTrip.id)&&x.desde<=hasta&&desde<=x.hasta);
+    if(otro){msg.textContent="Esas fechas se solapan con "+otro.nombre+". Cambia las fechas o edita ese viaje.";return}
+    if(!store){msg.textContent="Aún se están cargando tus datos.";return}
+    const v={id:editTrip?editTrip.id:"v"+Date.now().toString(36),nombre:$("tNombre").value.trim()||"Viaje",desde,hasta,presupuesto:pres,trabajo:$("tWork").checked};
+    const list=state.ajustes.viajes.filter(x=>!editTrip||x.id!==editTrip.id).concat([v]);
+    $("tSave").disabled=true;
+    try{
+      await saveViajes(list);
+      $("tripForm").hidden=true; editTrip=null;
+      if(desde<=iso(today())&&iso(today())<=hasta&&!state.catTouched)setCat("viaje");
+    }catch(e){msg.textContent="No se pudo guardar el viaje."}
+    finally{$("tSave").disabled=false}
+  });
+  $("tDel").addEventListener("click",async()=>{
+    const b=$("tDel"); if(!editTrip)return;
+    if(!b.classList.contains("confirm")){b.classList.add("confirm");b.textContent="¿Borrar? Sus gastos pasan a contar como extras";return}
+    try{await saveViajes(state.ajustes.viajes.filter(x=>x.id!==editTrip.id));$("tripForm").hidden=true;editTrip=null}
+    catch(e){$("tMsg").className="msg err";$("tMsg").textContent="No se pudo borrar el viaje."}
+  });
   function renderGoal(){
     const o=state.ajustes.objetivo, sec=$("goalCard");
     if(!o){sec.hidden=true;return}
@@ -672,7 +864,8 @@ label.chip{cursor:pointer;display:inline-block}
       if(wk>0) note+="Ahorrando como hasta ahora (unos "+fmt(wk)+" por semana) lo tendrías en "+Math.ceil(falta/wk)+" semanas.";
       else note+="Por ahora no te está sobrando dinero de gasolina y ocio.";
     }
-    if(a.extras>0) note+=" Ya descontados "+fmt(a.extras)+" de extras.";
+    if(a.extras>0) note+=" Ya descontados "+fmt(a.extras)+" de extras y viajes.";
+    if(a.pendiente>0) note+=" Además, tienes "+fmt(a.pendiente)+" adelantados en viajes de trabajo pendientes de que te devuelvan.";
     $("goalNote").textContent=note;
   }
 
@@ -681,15 +874,15 @@ label.chip{cursor:pointer;display:inline-block}
     const ref=state.anchor, months=[];
     for(let i=5;i>=0;i--){
       const s=new Date(ref.getFullYear(),ref.getMonth()-i,1), e=new Date(s.getFullYear(),s.getMonth()+1,0);
-      const si=iso(s), ei=iso(e), v={gasolina:0,ocio:0,ropa:0,otros:0,fijos:0};
+      const si=iso(s), ei=iso(e), v={gasolina:0,ocio:0,ropa:0,otros:0,viaje:0,fijos:0};
       state.gastos.forEach(g=>{if(g.fecha>=si&&g.fecha<=ei)v[g.cat in v?g.cat:"otros"]+=Number(g.importe)||0});
       v.fijos=sumImp(cargos(s,e));
-      v.total=v.gasolina+v.ocio+v.ropa+v.otros+v.fijos;
+      v.total=v.gasolina+v.ocio+v.ropa+v.otros+v.viaje+v.fijos;
       months.push({s,v});
     }
     const max=Math.max(1,...months.map(m=>m.v.total));
     const ch=$("chart"); ch.innerHTML="";
-    const series=[["gasolina","--gas"],["ocio","--ocio"],["ropa","--ropa"],["otros","--otros"],["fijos","--fijo"]];
+    const series=[["gasolina","--gas"],["ocio","--ocio"],["ropa","--ropa"],["otros","--otros"],["viaje","--viaje"],["fijos","--fijo"]];
     const mf=new Intl.DateTimeFormat("es-ES",{month:"short"});
     const curM=state.anchor.getMonth();
     months.forEach(m=>{
@@ -703,7 +896,7 @@ label.chip{cursor:pointer;display:inline-block}
       ch.appendChild(col);
     });
     const lg=$("legend"); if(!lg.childElementCount){
-      [["Gasolina","--gas"],["Ocio","--ocio"],["Ropa","--ropa"],["Extras","--otros"],["Fijos","--fijo"]].forEach(([n,c])=>{
+      [["Gasolina","--gas"],["Ocio","--ocio"],["Ropa","--ropa"],["Extras","--otros"],["Viaje","--viaje"],["Fijos","--fijo"]].forEach(([n,c])=>{
         const s=document.createElement("span"); const d=document.createElement("i"); d.style.background="var("+c+")"; s.append(d,document.createTextNode(n)); lg.appendChild(s);
       });
     }
@@ -742,6 +935,7 @@ label.chip{cursor:pointer;display:inline-block}
     MAIN.forEach(k=>{const b=pres[k]*f, d=b-sp[k]; sob+=d; rows.push([CATS.find(c=>c.id===k),b,sp[k],d])});
     rows.push([{name:"Hucha de ropa",color:"--ropa"},pres.ropa*f,sp.ropa,pres.ropa*f-sp.ropa]);
     rows.push([CATS[3],null,sp.otros,null]);
+    if(sp.viaje>0) rows.push([CATS[4],null,sp.viaje,null]);
 
     const head=$("monHead"); head.innerHTML="";
     const l1=document.createElement("div"); l1.className="mbig num";
@@ -760,6 +954,12 @@ label.chip{cursor:pointer;display:inline-block}
       if(sob>=sp.otros) l3.textContent="Los extras ("+fmt(sp.otros)+") los cubres con lo que te sobra de gasolina y ocio.";
       else l3.textContent="Los extras ("+fmt(sp.otros)+") superan lo que te sobra en "+fmt(sp.otros-Math.max(0,sob))+". Puedes cubrirlo con la hucha de ropa (tienes "+fmt(h.saldo)+").";
       head.appendChild(l3);
+    }
+    if(sp.viaje>0){
+      const pv=state.gastos.filter(g=>g.fecha>=s&&g.fecha<=e&&esPendiente(g)).reduce((t,g)=>t+(Number(g.importe)||0),0);
+      const l5=document.createElement("div"); l5.className="mline";
+      l5.textContent="En viajes: "+fmt(sp.viaje)+", aparte de tus presupuestos semanales."+(pv>0?" De eso, "+fmt(pv)+" te lo tienen que devolver.":"");
+      head.appendChild(l5);
     }
 
     const fx=cargos(p.start,p.end), fbox=$("monFijos"); fbox.innerHTML="";
@@ -804,7 +1004,7 @@ label.chip{cursor:pointer;display:inline-block}
     const byDay={};
     state.gastos.forEach(g=>{
       const d=byDay[g.fecha]||(byDay[g.fecha]={tot:0,cats:new Set()});
-      d.tot+=Number(g.importe)||0; d.cats.add(g.cat in {gasolina:1,ocio:1,ropa:1}?g.cat:"otros");
+      d.tot+=Number(g.importe)||0; d.cats.add(CATS.some(c=>c.id===g.cat)?g.cat:"otros");
     });
     let max=0;
     for(let i=1;i<=days;i++){const k=iso(new Date(first.getFullYear(),first.getMonth(),i));if(byDay[k])max=Math.max(max,byDay[k].tot)}
@@ -821,9 +1021,10 @@ label.chip{cursor:pointer;display:inline-block}
       if(info){b.classList.add("has");b.style.setProperty("--heat",(0.25+0.75*info.tot/max).toFixed(2))}
       if(ws&&k>=ws&&k<=we)b.classList.add("inweek");
       if(k===tk)b.classList.add("today");
+      const vj=viajeDe(k); if(vj)b.classList.add("trip");
       if(k>tk)b.classList.add("future");
       b.setAttribute("aria-pressed",state.selDay===k);
-      b.setAttribute("aria-label",dl.format(date)+(info?": "+fmt(info.tot):": sin gastos"));
+      b.setAttribute("aria-label",dl.format(date)+(vj?" (viaje: "+vj.nombre+")":"")+(info?": "+fmt(info.tot):": sin gastos"));
       const n=document.createElement("span");n.className="n";n.textContent=i;b.appendChild(n);
       if(info){
         const v=document.createElement("span");v.className="v";v.textContent=fmt(info.tot).replace(/,00\s?€/," €");b.appendChild(v);
@@ -850,10 +1051,11 @@ label.chip{cursor:pointer;display:inline-block}
       b.innerHTML='<span class="dot"></span>';b.querySelector(".dot").style.background="var("+c.color+")";
       b.appendChild(document.createTextNode(c.name));
       b.setAttribute("aria-pressed",c.id===state.cat);
-      b.addEventListener("click",()=>{state.cat=c.id;[...box.children].forEach((x,i)=>x.setAttribute("aria-pressed",CATS[i].id===c.id))});
+      b.addEventListener("click",()=>{state.catTouched=true;setCat(c.id)});
       box.appendChild(b);
     });
   }
+  function setCat(id){state.cat=id;[...$("fCats").children].forEach((x,i)=>x.setAttribute("aria-pressed",CATS[i].id===id))}
   $("fDate").value=iso(today());
   $("addForm").addEventListener("submit",async ev=>{
     ev.preventDefault();
@@ -863,6 +1065,12 @@ label.chip{cursor:pointer;display:inline-block}
     const fecha=$("fDate").value||iso(today());
     if(!store){msg.className="msg err";msg.textContent="Espera un momento, aún se están cargando tus datos.";return}
     const g={importe:Math.round(amount*100)/100,cat:state.cat,nota:$("fNote").value.trim(),fecha,creado:Date.now()};
+    let vj=null;
+    if(g.cat==="viaje"){
+      vj=viajeDe(fecha);
+      if(!vj){msg.className="msg err";msg.textContent="Esa fecha no cae dentro de ningún viaje. Crea el viaje en Viajes o cambia la fecha.";return}
+      g.viaje=vj.id; if(vj.trabajo)g.reemb="pend";
+    }
     $("fSave").disabled=true;
     try{
       const r=await store.add(g);
@@ -886,6 +1094,11 @@ label.chip{cursor:pointer;display:inline-block}
         aviso=q>=0?" Te quedan "+fmt(q)+" de "+catName.toLowerCase()+" esa semana.":" Te has pasado "+fmt(-q)+" de "+catName.toLowerCase()+" esa semana.";
       } else if(g.cat==="ropa"){
         aviso=" En la hucha de ropa te quedan "+fmt(hucha().saldo-extra)+".";
+      } else if(vj){
+        const tot=sumImp(gastosViaje(vj))+extra;
+        if(vj.trabajo) aviso=" Llevas "+fmt(tot)+" adelantados en "+vj.nombre+", pendientes de que te devuelvan.";
+        else if(vj.presupuesto){const q=vj.presupuesto-tot;aviso=q>=0?" Te quedan "+fmt(q)+" para "+vj.nombre+".":" Te has pasado "+fmt(-q)+" del presupuesto de "+vj.nombre+".";}
+        else aviso=" Llevas "+fmt(tot)+" en "+vj.nombre+".";
       } else {
         aviso=" Tu ahorro disponible queda en "+fmt(ahorro().disponible-extra)+".";
       }
@@ -932,7 +1145,7 @@ label.chip{cursor:pointer;display:inline-block}
     for(const k in vals){if(!isFinite(vals[k])||vals[k]<0){msg.className="msg err";msg.textContent="Revisa los presupuestos: deben ser números de 0 en adelante.";return}}
     const incRaw=$("sIncome").value.trim(); const inc=incRaw===""?null:parseNum(incRaw);
     if(inc!==null&&(!isFinite(inc)||inc<0)){msg.className="msg err";msg.textContent="El ingreso mensual debe ser un número, o déjalo vacío.";return}
-    const a={presupuestos:vals,ingreso:inc};
+    const a={presupuestos:vals,ingreso:inc,viajes:state.ajustes.viajes};
     const ini=$("sInicio").value; if(ini) a.inicio=iso(monday(parseIso(ini)));
     else if(state.ajustes.inicio) a.inicio=state.ajustes.inicio;
     const gAmt=$("sGoalAmt").value.trim();
